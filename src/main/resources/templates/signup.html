@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .signup-container {
+            background-color: #ffffff;
+            border-radius: 16px;
+            padding: 48px 40px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .signup-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #111827;
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 50px;
+            font-size: 16px;
+            background-color: #ffffff;
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: #9ca3af;
+            font-weight: 400;
+        }
+
+        .form-input.error {
+            border-color: #dc2626;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+
+        .form-input.success {
+            border-color: #059669;
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+        }
+
+        .optional-label {
+            font-size: 12px;
+            color: #6b7280;
+            margin-left: 20px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .signup-button {
+            width: 100%;
+            padding: 16px 20px;
+            background-color: #111827;
+            color: #ffffff;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+            margin-top: 16px;
+        }
+
+        .signup-button:hover {
+            background-color: #1f2937;
+            transform: translateY(-1px);
+        }
+
+        .signup-button:active {
+            transform: translateY(0);
+        }
+
+        .signup-button:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .login-link {
+            display: block;
+            text-align: center;
+            margin-top: 24px;
+            color: #6b7280;
+            font-size: 14px;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            transition: color 0.2s ease-in-out;
+            cursor: pointer;
+        }
+
+        .login-link:hover {
+            color: #374151;
+            text-decoration: underline;
+        }
+
+        .error-message {
+            color: #dc2626;
+            font-size: 12px;
+            margin-top: 4px;
+            margin-left: 20px;
+            display: none;
+        }
+
+        .success-message {
+            color: #059669;
+            font-size: 14px;
+            margin-top: 16px;
+            text-align: center;
+        }
+
+        .general-error {
+            color: #dc2626;
+            font-size: 14px;
+            margin-top: 16px;
+            text-align: center;
+        }
+
+        @media (max-width: 480px) {
+            .signup-container {
+                padding: 32px 24px;
+            }
+
+            .signup-title {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="signup-container">
+    <h1 class="signup-title">Sign Up</h1>
+
+    <form th:action="@{/signup}" method="post" id="signupForm">
+        <div class="form-group">
+            <input
+                    type="email"
+                    name="email"
+                    id="email"
+                    class="form-input"
+                    placeholder="ID (Email)"
+                    required
+                    th:value="${email}"
+                    autocomplete="email"
+            />
+            <div class="error-message" id="emailError">올바른 이메일 형식을 입력해주세요.</div>
+        </div>
+
+        <div class="form-group">
+            <input
+                    type="password"
+                    name="password"
+                    id="password"
+                    class="form-input"
+                    placeholder="PASSWORD"
+                    required
+                    th:value="${password}"
+                    autocomplete="new-password"
+                    minlength="8"
+            />
+            <div class="error-message" id="passwordError">비밀번호는 8자 이상이어야 합니다.</div>
+        </div>
+
+        <div class="form-group">
+            <input
+                    type="password"
+                    name="passwordCheck"
+                    id="passwordCheck"
+                    class="form-input"
+                    placeholder="PASSWORD CHECK"
+                    required
+                    autocomplete="new-password"
+            />
+            <div class="error-message" id="passwordCheckError">비밀번호가 일치하지 않습니다.</div>
+        </div>
+
+        <div class="form-group">
+            <label class="optional-label">지점번호 (관리자 전용)</label>
+            <input
+                    type="text"
+                    name="branchNumber"
+                    id="branchNumber"
+                    class="form-input"
+                    placeholder="지점번호를 입력하세요"
+                    th:value="${branchNumber}"
+            />
+        </div>
+
+        <button type="submit" class="signup-button" id="submitBtn">Sign Up</button>
+
+    </form>
+
+    <!-- 로그인 링크 -->
+    <a th:href="@{/signin}" class="login-link">이미 계정이 있으신가요? Login</a>
+
+    <!-- 에러 메시지 표시 -->
+    <div th:if="${error}" class="general-error">
+        <span th:text="${error}">회원가입에 실패했습니다.</span>
+    </div>
+
+    <!-- 성공 메시지 표시 -->
+    <div th:if="${message}" class="success-message">
+        <span th:text="${message}">메시지</span>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('signupForm');
+        const email = document.getElementById('email');
+        const password = document.getElementById('password');
+        const passwordCheck = document.getElementById('passwordCheck');
+        const branchNumber = document.getElementById('branchNumber');
+        const submitBtn = document.getElementById('submitBtn');
+
+        // 이메일 유효성 검사
+        function validateEmail() {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const isValid = emailRegex.test(email.value);
+            toggleError(email, 'emailError', !isValid);
+            return isValid;
+        }
+
+        // 비밀번호 유효성 검사
+        function validatePassword() {
+            const isValid = password.value.length >= 8;
+            toggleError(password, 'passwordError', !isValid);
+            return isValid;
+        }
+
+        // 비밀번호 확인 검사
+        function validatePasswordCheck() {
+            const isValid = password.value === passwordCheck.value && passwordCheck.value !== '';
+            toggleError(passwordCheck, 'passwordCheckError', !isValid);
+            return isValid;
+        }
+
+        // 지점번호 유효성 검사 (선택사항)
+        function validateBranchNumber() {
+            if (branchNumber.value === '') return true; // 선택사항이므로 빈 값은 유효
+            const isValid = /^\d+$/.test(branchNumber.value);
+            toggleError(branchNumber, 'branchError', !isValid);
+            return isValid;
+        }
+
+        // 에러 표시/숨김 함수
+        function toggleError(input, errorId, showError) {
+            const errorElement = document.getElementById(errorId);
+            if (showError) {
+                input.classList.add('error');
+                input.classList.remove('success');
+                errorElement.style.display = 'block';
+            } else {
+                input.classList.remove('error');
+                input.classList.add('success');
+                errorElement.style.display = 'none';
+            }
+        }
+
+        // 전체 폼 유효성 검사
+        function validateForm() {
+            const isEmailValid = validateEmail();
+            const isPasswordValid = validatePassword();
+            const isPasswordCheckValid = validatePasswordCheck();
+            const isBranchValid = validateBranchNumber();
+
+            const isFormValid = isEmailValid && isPasswordValid && isPasswordCheckValid && isBranchValid;
+            submitBtn.disabled = !isFormValid;
+            return isFormValid;
+        }
+
+        // 이벤트 리스너
+        email.addEventListener('blur', validateEmail);
+        email.addEventListener('input', validateForm);
+
+        password.addEventListener('blur', validatePassword);
+        password.addEventListener('input', function() {
+            validatePassword();
+            if (passwordCheck.value) validatePasswordCheck();
+            validateForm();
+        });
+
+        passwordCheck.addEventListener('blur', validatePasswordCheck);
+        passwordCheck.addEventListener('input', function() {
+            validatePasswordCheck();
+            validateForm();
+        });
+
+        branchNumber.addEventListener('blur', validateBranchNumber);
+        branchNumber.addEventListener('input', function() {
+            validateBranchNumber();
+            validateForm();
+        });
+
+        // 폼 제출 시 최종 검증
+        form.addEventListener('submit', function(e) {
+            if (!validateForm()) {
+                e.preventDefault();
+            }
+        });
+    });
+</script>
+</body>
+</html>
